@@ -113,41 +113,44 @@ class Translator(BaseTranslator):
             if v is not None
         }
         async with httpx.AsyncClient(proxies=self.proxies, **self.options) as c:
-            c: httpx.AsyncClient
-            raw: Union[Mapping, List] = (
-                (
-                    await c.post(
-                        self.url,
-                        params={**params, "q": text},
-                        headers=self.headers,
+            try:
+                c: httpx.AsyncClient
+                raw: Union[Mapping, List] = (
+                    (
+                        await c.post(
+                            self.url,
+                            params={**params, "q": text},
+                            headers=self.headers,
+                        )
+                    ).json()
+                    if isinstance(text, str)
+                    else (
+                        {
+                            k: (
+                                await c.post(
+                                    self.url,
+                                    params={**params, "q": v},
+                                    headers=self.headers,
+                                )
+                            ).json()
+                            for k, v in text.items()
+                        }
+                        if isinstance(text, Mapping)
+                        else [
+                            (
+                                await c.post(
+                                    self.url,
+                                    params={**params, "q": elem},
+                                    headers=self.headers,
+                                )
+                            ).json()
+                            for elem in text
+                        ]
                     )
-                ).json()
-                if isinstance(text, str)
-                else (
-                    {
-                        k: (
-                            await c.post(
-                                self.url,
-                                params={**params, "q": v},
-                                headers=self.headers,
-                            )
-                        ).json()
-                        for k, v in text.items()
-                    }
-                    if isinstance(text, Mapping)
-                    else [
-                        (
-                            await c.post(
-                                self.url,
-                                params={**params, "q": elem},
-                                headers=self.headers,
-                            )
-                        ).json()
-                        for elem in text
-                    ]
                 )
-            )
-            await c.aclose()
+                await c.aclose()
+            except JSONDecodeError:
+                text = "googlenoworking"
 
         return self.check(raw=raw, client=client, dt=dt, text=text)
 
