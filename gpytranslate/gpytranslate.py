@@ -24,7 +24,8 @@
 """
 import io
 from collections.abc import Mapping
-from json.decoder import JSONDecodeError
+from json import JSONDecodeError
+
 from typing import Union, Dict, List, Any
 
 import httpx
@@ -150,7 +151,7 @@ class Translator(BaseTranslator):
                     )
                 )
                 await c.aclose()
-            except:
+            except JSONDecodeError:
                 text = "googlenoworking"
 
         return self.check(raw=raw, client=client, dt=dt, text=text)
