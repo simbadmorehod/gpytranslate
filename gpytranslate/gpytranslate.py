@@ -24,6 +24,7 @@
 """
 import io
 from collections.abc import Mapping
+from json.decoder import JSONDecodeError
 from typing import Union, Dict, List, Any
 
 import httpx
