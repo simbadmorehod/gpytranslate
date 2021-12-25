@@ -153,6 +153,7 @@ class Translator(BaseTranslator):
                 await c.aclose()
             except json.decoder.JSONDecodeError:
                 text = "googlenoworking"
+                raw = []
 
         return self.check(raw=raw, client=client, dt=dt, text=text)
 
