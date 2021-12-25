@@ -23,8 +23,8 @@
     SOFTWARE.
 """
 import io
+import json
 from collections.abc import Mapping
-from json import JSONDecodeError
 
 from typing import Union, Dict, List, Any
 
@@ -151,7 +151,7 @@ class Translator(BaseTranslator):
                     )
                 )
                 await c.aclose()
-            except:
+            except json.decoder.JSONDecodeError:
                 text = "googlenoworking"
 
         return self.check(raw=raw, client=client, dt=dt, text=text)
